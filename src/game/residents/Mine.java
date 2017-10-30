@@ -5,6 +5,7 @@ import java.awt.Color;
 import javax.swing.JPanel;
 
 import game.Player;
+import game.PlayerData;
 import game.residents.interfaces.MineDetails;
 
 public class Mine extends TileResident {
@@ -12,14 +13,14 @@ public class Mine extends TileResident {
 	public int moneyPerTurn = 3;
 	private int cost = 7;
 	
-	public Mine(Player player, int cost) {
-		this.player = player;
+	public Mine(PlayerData playerData, int cost) {
+		this.playerData = playerData;
 		this.cost = cost;
 		this.health = 4;	
 	}
 	
-	public Mine(Player owner) {
-		this(owner, 4);
+	public Mine(PlayerData playerData) {
+		this(playerData, 4);
 	}
 
 	@Override
@@ -39,7 +40,7 @@ public class Mine extends TileResident {
 
 	@Override
 	public void startOfTurnEffect() {
-		this.player.money += this.moneyPerTurn;
+		Player.player.money += this.moneyPerTurn;
 	}
 
 	@Override

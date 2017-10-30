@@ -14,9 +14,9 @@ import main.World;
 
 public class Player {
 	
-	public static Player[] players = {new Player(new Color(114, 181, 204)), new Player(new Color(230,230,250))};
-	public static Player currentPlayer = players[0];
+	public static Player player = new Player(new Color(114, 181, 204));
 
+	public String name = "Andrew";
 	public boolean needPlaceBase = true;
 	public int money = 0;
 	private boolean boughtBuildingThisTurn = false;
@@ -26,8 +26,9 @@ public class Player {
 	
 	public Player(Color color) {
 		this.color = color;
+		PlayerData.me = new PlayerData(this.name, this.color);
 		
-		this.addLimited(new Base(this));
+		this.addLimited(new Base(PlayerData.me));
 	}
 	
 	public void addLimited(TileResident limited) {
@@ -39,8 +40,8 @@ public class Player {
 		this.canMake.remove(resident);
 		
 		if (resident instanceof Base) {
-			this.addLimited(new Mine(this, 0));
-			this.addLimited(new Mine(this, 0));
+			this.addLimited(new Mine(PlayerData.me, 0));
+			this.addLimited(new Mine(PlayerData.me, 0));
 			this.limitedSupply.remove(resident);
 			this.needPlaceBase = false;
 		}
@@ -56,7 +57,7 @@ public class Player {
 		for (int i = 0; i < World.board.tiles.length; i++) {
 			for (int j = 0; j < World.board.tiles[i].length; j++) {
 				BoardTile currentTile = World.board.tiles[i][j];
-				if (currentTile.resident.player() == this) {
+				if (currentTile.resident.playerData() == PlayerData.me) {
 					currentTile.resident.startOfTurnEffect();
 				}
 			}
@@ -78,14 +79,14 @@ public class Player {
 		
 		//add back non limited resources
 		if (!boughtBuildingThisTurn) {
-			canMake.add(new Mine(this));
-			canMake.add(new Farm(this));
-			canMake.add(new Armory(this));
+			canMake.add(new Mine(PlayerData.me));
+			canMake.add(new Farm(PlayerData.me));
+			canMake.add(new Armory(PlayerData.me));
 		}
 		
 		if (this.ownedUnits() < this.maxUnits()) {
-			canMake.add(new Footman(this));
-			canMake.add(new Spearman(this));
+			canMake.add(new Footman(PlayerData.me));
+			canMake.add(new Spearman(PlayerData.me));
 		}
 		
 		return canMake.toArray(new TileResident[canMake.size()]);
@@ -97,7 +98,7 @@ public class Player {
 		for (int i = 0; i < World.board.tiles.length; i++) {
 			for (int j = 0; j < World.board.tiles[i].length; j++) {
 				BoardTile currentTile = World.board.tiles[i][j];
-				if (!currentTile.resident.canBuildOn() && currentTile.resident.player() == this) {
+				if (!currentTile.resident.canBuildOn() && currentTile.resident.playerData() == PlayerData.me) {
 					owned++;
 				}
 			}
@@ -112,7 +113,7 @@ public class Player {
 		for (int i = 0; i < World.board.tiles.length; i++) {
 			for (int j = 0; j < World.board.tiles[i].length; j++) {
 				BoardTile currentTile = World.board.tiles[i][j];
-				if (currentTile.resident.player() == this) {
+				if (currentTile.resident.playerData() == PlayerData.me) {
 					max += currentTile.resident.maxUnitsBuff();
 				}
 			}
@@ -127,7 +128,7 @@ public class Player {
 		for (int i = 0; i < World.board.tiles.length; i++) {
 			for (int j = 0; j < World.board.tiles[i].length; j++) {
 				BoardTile currentTile = World.board.tiles[i][j];
-				if (currentTile.resident.player() == this) {
+				if (currentTile.resident.playerData() == PlayerData.me) {
 					if (!owned.contains(currentTile.resident.name())) {
 						owned.add(currentTile.resident.name());
 					}

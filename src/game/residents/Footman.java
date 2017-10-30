@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import javax.swing.JPanel;
 
-import game.Player;
+import game.PlayerData;
 import game.residents.interfaces.UnitDetails;
 import game.residents.interfaces.UnitInterface;
 
@@ -13,8 +13,8 @@ public class Footman extends TileResident {
 	private int actionsLeft;
 	private boolean canAttack = true;
 	
-	public Footman(Player player) {
-		this.player = player;
+	public Footman(PlayerData playerData) {
+		this.playerData = playerData;
 		this.health = 2;
 	}
 	
@@ -93,7 +93,7 @@ public class Footman extends TileResident {
 	
 	@Override
 	public String toString() {
-		return "Base:"+Integer.toString(this.health)+","+Integer.toString(this.actionsLeft)+","+Boolean.toString(canAttack);
+		return "Footman:"+Integer.toString(this.health)+","+Integer.toString(this.actionsLeft)+","+Boolean.toString(canAttack);
 	}
 	
 }

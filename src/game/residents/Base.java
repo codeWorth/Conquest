@@ -5,12 +5,13 @@ import java.awt.Color;
 import javax.swing.JPanel;
 
 import game.Player;
+import game.PlayerData;
 import game.residents.interfaces.BaseDetails;
 
 public class Base extends TileResident {
 		
-	public Base(Player player) {
-		this.player = player;
+	public Base(PlayerData playerData) {
+		this.playerData = playerData;
 		this.health = 6;
 	}
 	
@@ -34,14 +35,14 @@ public class Base extends TileResident {
 		this.health -= damage;
 		
 		if (this.health <= 0) {
-			System.out.println("Player " + this.player.color.toString() + " lost!");
+			System.out.println("You lost!");
 			System.exit(0);
 		}
 	}
 
 	@Override
 	public void startOfTurnEffect() {
-		this.player.money += 1;
+		Player.player.money += 1;
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.awt.Color;
 import javax.swing.JPanel;
 
 import game.Player;
+import game.PlayerData;
 import game.residents.interfaces.BuildMenu;
 
 public class EmptyResident extends TileResident {
@@ -44,8 +45,8 @@ public class EmptyResident extends TileResident {
 	}
 
 	@Override
-	public Player player() {
-		return null;
+	public PlayerData playerData() {
+		return PlayerData.noPlayer;
 	}
 	
 	@Override
@@ -55,7 +56,7 @@ public class EmptyResident extends TileResident {
 
 	@Override
 	public JPanel statsPanel() {
-		return new BuildMenu(Player.currentPlayer.makeOptions());
+		return new BuildMenu(Player.player.makeOptions());
 	}
 
 	@Override

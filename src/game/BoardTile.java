@@ -1,6 +1,5 @@
 package game;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -31,12 +30,12 @@ public class BoardTile implements Drawable {
 	
 	@Override
 	public void draw(Graphics2D ctx) {
-		if (this.resident.player() == null) {
+		if (this.resident.playerData() == PlayerData.noPlayer) {
 			ctx.setPaint(this.resident.mapColor());
 			Rectangle shape = new Rectangle(this.screenX(), this.screenY(), Board.TILE_SIZE, Board.TILE_SIZE);
 			ctx.fill(shape);
 		} else {
-			ctx.setPaint(this.resident.player().color);
+			ctx.setPaint(this.resident.minimapColor());
 			Rectangle shape = new Rectangle(this.screenX(), this.screenY(), Board.TILE_SIZE, Board.TILE_SIZE);
 			ctx.fill(shape);
 			

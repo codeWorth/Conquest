@@ -2,12 +2,15 @@ package game;
 
 import java.awt.Graphics2D;
 
+import game.network.NetworkClient;
 import game.residents.EmptyResident;
+import game.residents.TileResident;
 import graphics.Camera;
 import graphics.Drawable;
 import graphics.Sidebar;
 import graphics.Surface;
 import graphics.TileTint;
+import main.World;
 import util.input.InputBinds;
 
 public class Board implements Drawable {
@@ -22,9 +25,18 @@ public class Board implements Drawable {
 	public int totalWidth, totalHeight;
 	
 	public BoardTile selectedTile;
-	public BoardTile[][] tiles;
 	private TileTint[][] tileTints;
 		
+	public BoardTile[][] tiles;
+	public void setResident(int x, int y, TileResident resident) {
+		tiles[x][y].resident = resident;
+		NetworkClient.sendChange(x, y);
+	}
+	public void setSelectedResident(TileResident resident) {
+		selectedTile.resident = resident;
+		NetworkClient.sendChange(selectedTile.x, selectedTile.y);
+	}
+	
 	private int[][] moveStepsLeft;
 	
 	private int actionsForPos(int x, int y, int residentRange) {
@@ -73,8 +85,21 @@ public class Board implements Drawable {
 		int x = (int)((InputBinds.selectedTile.mouseX + Camera.CAM_X) / Board.TOTAL_TILE_SIZE);
 		int y = (int)((InputBinds.selectedTile.mouseY + Camera.CAM_Y) / Board.TOTAL_TILE_SIZE);
 		
-		if (Player.currentPlayer.needPlaceBase) {
-			if (tiles[x][y].resident.player() == null) {
+		if (!World.isMyTurn) {
+			BoardTile tile = tiles[x][y];
+			if (tile.resident.canSelect() && tile.resident.playerData() != PlayerData.noPlayer) {
+				tileTints[x][y] = TileTint.WHITE;
+				Surface.instance.removeUI();
+				Sidebar.instance.addStats(tile.resident.statsPanel());
+			} else {
+				deselectTile();
+			}
+			
+			return;
+		}
+		
+		if (Player.player.needPlaceBase) {
+			if (tiles[x][y].resident.playerData() == PlayerData.noPlayer) {
 				resetTiles();
 				
 				selectedTile = tiles[x][y];
@@ -96,10 +121,10 @@ public class Board implements Drawable {
 				selectedTile.resident.reduceActionsLeft(1);
 				
 				if (selectedTile.resident.health() <= 0) {
-					selectedTile.resident = new EmptyResident();
+					setSelectedResident(new EmptyResident());
 				}
 				if (tiles[x][y].resident.health() <= 0) {
-					tiles[x][y].resident = new EmptyResident();
+					setResident(x, y, new EmptyResident());
 				}	
 			}
 			
@@ -115,7 +140,7 @@ public class Board implements Drawable {
 			
 			break;
 		case NONE:
-			if (tiles[x][y].resident.player() == null) {
+			if (tiles[x][y].resident.playerData() == PlayerData.noPlayer) {
 				if (hasFriendlyBordering(x, y)) {
 					resetTiles();
 					
@@ -127,10 +152,10 @@ public class Board implements Drawable {
 				} else {
 					deselectTile();
 				}
-			} else if (tiles[x][y].resident.player() != Player.currentPlayer) {
+			} else if (tiles[x][y].resident.playerData() != PlayerData.me) {
 				deselectTile();
 
-				if (tiles[x][y].resident.player() != null) {
+				if (tiles[x][y].resident.playerData() != PlayerData.noPlayer) {
 					tileTints[x][y] = TileTint.WHITE;
 					Surface.instance.removeUI();
 					Sidebar.instance.addStats(tiles[x][y].resident.statsPanel());
@@ -159,27 +184,20 @@ public class Board implements Drawable {
 	}
 	
 	private boolean hasFriendlyBordering(int x, int y) {
-		Player upPlayer = null;
-		Player downPlayer = null;
-		Player leftPlayer = null;
-		Player rightPlayer = null;
-		if (x > 0 && tiles[x-1][y].resident.canBuildOn()) {
-			leftPlayer = tiles[x-1][y].resident.player();
+		if (x > 0 && tiles[x-1][y].resident.canBuildOn() && tiles[x-1][y].resident.playerData() == PlayerData.me) {
+			return true;
 		}
-		if (x < tiles.length - 1 && tiles[x+1][y].resident.canBuildOn()) {
-			rightPlayer = tiles[x+1][y].resident.player();
+		if (x < tiles.length - 1 && tiles[x+1][y].resident.canBuildOn() && tiles[x+1][y].resident.playerData() == PlayerData.me) {
+			return true;
 		}
-		if (y > 0 && tiles[x][y-1].resident.canBuildOn()) {
-			upPlayer = tiles[x][y-1].resident.player();
+		if (y > 0 && tiles[x][y-1].resident.canBuildOn() && tiles[x][y-1].resident.playerData() == PlayerData.me) {
+			return true;
 		}
-		if (y < tiles[0].length - 1 && tiles[x][y+1].resident.canBuildOn()) {
-			downPlayer = tiles[x][y+1].resident.player();
+		if (y < tiles[0].length - 1 && tiles[x][y+1].resident.canBuildOn() && tiles[x][y+1].resident.playerData() == PlayerData.me) {
+			return true;
 		}
 		
-		return upPlayer == Player.currentPlayer || 
-				downPlayer == Player.currentPlayer || 
-				leftPlayer == Player.currentPlayer || 
-				rightPlayer == Player.currentPlayer;
+		return false;
 	}
 	
 	public void highlightAllowed() {
@@ -245,7 +263,7 @@ public class Board implements Drawable {
 				int newY = y + j;
 				
 				BoardTile tile = tiles[newX][newY];
-				if (tile.resident.health() > 0 && tile.resident.player() != Player.currentPlayer) {
+				if (tile.resident.health() > 0 && tile.resident.playerData() != PlayerData.me) {
 					tileTints[newX][newY] = TileTint.RED;
 					canShootHere[newX][newY] = true;
 				} else {
@@ -267,8 +285,8 @@ public class Board implements Drawable {
 	
 	private void moveResident(int newX, int newY) {
 		selectedTile.resident.reduceActionsLeft(actionsForPos(newX, newY, selectedTile.resident.actionsLeft()));
-		tiles[newX][newY].resident = selectedTile.resident;
-		selectedTile.resident = new EmptyResident();
+		setResident(newX, newY, selectedTile.resident);
+		setSelectedResident(new EmptyResident());
 	}
 	
 	public void newTurn() {
@@ -283,7 +301,7 @@ public class Board implements Drawable {
 		for (int i = 0; i < tiles.length; i++) {
 			for (int j = 0; j < tiles[i].length; j++) {
 				BoardTile tile = tiles[i][j];
-				if (tile.resident.player() == Player.currentPlayer) {
+				if (tile.resident.playerData() == PlayerData.me) {
 					tiles[i][j].resident.setActionsLeft(tile.resident.moveRange());
 				}
 			}

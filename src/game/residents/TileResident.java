@@ -5,13 +5,13 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import game.Player;
+import game.PlayerData;
 
 public abstract class TileResident {
 	
 	public static ArrayList<TileResident> residents = new ArrayList<>();
 	
-	protected Player player;
+	protected PlayerData playerData;
 	protected int health;
 
 	public int moveRange() {
@@ -25,7 +25,7 @@ public abstract class TileResident {
 	}
 	
 	public Color minimapColor() {
-		return this.player.color;
+		return Color.white;
 	}
 
 	public abstract Color mapColor();
@@ -48,8 +48,8 @@ public abstract class TileResident {
 		this.health -= damage;
 	}
 	
-	public Player player() {
-		return this.player;
+	public PlayerData playerData() {
+		return this.playerData;
 	}
 	
 	public void startOfTurnEffect() {
@@ -83,5 +83,7 @@ public abstract class TileResident {
 	public String[] prereqs() {
 		return new String[0];
 	}
-		
+	
+	public abstract String toString();
+	
 }

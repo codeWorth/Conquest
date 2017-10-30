@@ -4,24 +4,19 @@ import java.awt.Color;
 
 import javax.swing.JPanel;
 
-import game.Player;
+import game.PlayerData;
 import game.residents.interfaces.FarmDetails;
 
 public class Farm extends TileResident {
 	
-	public Farm(Player player) {
-		this.player = player;
+	public Farm(PlayerData playerData) {
+		this.playerData = playerData;
 		this.health = 5;	
 	}
 
 	@Override
 	public boolean canBuildOn() {
 		return true;
-	}
-
-	@Override
-	public Color minimapColor() {
-		return this.player.color;
 	}
 
 	@Override
@@ -66,7 +61,7 @@ public class Farm extends TileResident {
 
 	@Override
 	public String toString() {
-		return "Base:"+Integer.toString(this.health);
+		return "Farm:"+Integer.toString(this.health);
 	}
 
 }

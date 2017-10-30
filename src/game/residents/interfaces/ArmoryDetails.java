@@ -18,11 +18,19 @@ public class ArmoryDetails extends JPanel {
 		setOpaque(false);
 		setBounds(0, Sidebar.detailsStart, Sidebar.width, 400);
 		
+		JLabel playerName = new JLabel("Player: " + resident.playerData().name, SwingConstants.CENTER);
+		playerName.setOpaque(true);
+		playerName.setBackground(resident.playerData().color);
+		playerName.setFont(new Font("Helvetica", Font.PLAIN, 20));
+		playerName.setBounds((Sidebar.width - 160) / 2, 0, 160, 30);
+		playerName.setVerticalTextPosition(AbstractButton.CENTER);
+		add(playerName);
+		
 		JLabel unitName = new JLabel(resident.name(), SwingConstants.CENTER);
 		unitName.setOpaque(true);
 		unitName.setBackground(Color.white);
 		unitName.setFont(new Font("Helvetica", Font.PLAIN, 20));
-		unitName.setBounds((Sidebar.width - 120) / 2, 0, 120, 30);
+		unitName.setBounds((Sidebar.width - 120) / 2, 35, 120, 30);
 		unitName.setVerticalTextPosition(AbstractButton.CENTER);
 		add(unitName);
 		
@@ -30,14 +38,14 @@ public class ArmoryDetails extends JPanel {
 		healthLabel.setOpaque(true);
 		healthLabel.setBackground(new Color(150, 80, 80));
 		healthLabel.setFont(new Font("Helvetica", Font.PLAIN, 20));
-		healthLabel.setBounds((Sidebar.width - 110) / 2, 35, 110, 30);
+		healthLabel.setBounds((Sidebar.width - 110) / 2, 70, 110, 30);
 		healthLabel.setVerticalTextPosition(AbstractButton.CENTER);
 		
 		JLabel allowedUnitsLabel = new JLabel("<html>Allows units: <br> Spearman <br> Cavalry</html>", SwingConstants.CENTER);
 		allowedUnitsLabel.setOpaque(true);
 		allowedUnitsLabel.setBackground(new Color(234, 204, 187));
 		allowedUnitsLabel.setFont(new Font("Helvetica", Font.PLAIN, 20));
-		allowedUnitsLabel.setBounds((Sidebar.width - 150) / 2, 70, 150, 70);
+		allowedUnitsLabel.setBounds((Sidebar.width - 150) / 2, 105, 150, 70);
 		allowedUnitsLabel.setVerticalTextPosition(AbstractButton.CENTER);
 		
 		add(healthLabel);

@@ -8,6 +8,7 @@ import javax.swing.Timer;
 
 import game.Board;
 import game.Player;
+import game.network.NetworkClient;
 import graphics.Camera;
 import graphics.Minimap;
 import graphics.Sidebar;
@@ -18,11 +19,12 @@ public class World {
 
 	public static Graphics2D ctx;
 	
-	public static int currentTurn = 0;
+	public static boolean isMyTurn = false;
 	public static Board board;
 	public static Minimap minimap;
 	private static final Color defaultMouseColor = new Color(0, 0, 0, 60);
 	public static Color mouseColor = defaultMouseColor;
+	private static Thread networkThread;
 		
 	public static Timer timer;
 	public static int timerDelay = 100;
@@ -43,21 +45,29 @@ public class World {
 			}
 		});
 		
-		Player.currentPlayer.turnStart();
-		board.newTurn();
+		networkThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				NetworkClient.start();
+			}
+		});
+		networkThread.start();
+		Sidebar.detailsStart = 20;
 		Sidebar.instance.redrawUI();
 	}
 	
-	public static void nextTurn() {
-		currentTurn++;
-		if (currentTurn >= Player.players.length) {
-			currentTurn = 0;
+	public static void nextTurn(boolean myTurn) {
+		if (!myTurn) {
+			NetworkClient.sendEndTurn();
+			isMyTurn = false;
+		} else {
+			isMyTurn = true;
+			Sidebar.detailsStart = 210;
+			
+			Player.player.turnStart();
+			board.newTurn();
 		}
 		
-		Player.currentPlayer = Player.players[currentTurn];
-		Player.currentPlayer.turnStart();
-		
-		board.newTurn();
 		Sidebar.instance.redrawUI();
 	}
 	

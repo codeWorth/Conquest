@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import javax.swing.JPanel;
 
-import game.Player;
+import game.PlayerData;
 import game.residents.interfaces.ArmoryDetails;
 
 /**
@@ -14,8 +14,8 @@ import game.residents.interfaces.ArmoryDetails;
 
 public class Armory extends TileResident {
 	
-	public Armory(Player player) {
-		this.player = player;
+	public Armory(PlayerData playerData) {
+		this.playerData = playerData;
 		this.health = 5;
 	}
 	

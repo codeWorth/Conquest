@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import game.Player;
+import game.PlayerData;
 import game.residents.TileResident;
 import graphics.Sidebar;
 import main.World;
@@ -34,7 +35,7 @@ public class BuildMenu extends JPanel {
 		int i = 0;
 		xPos = (Sidebar.width - 180) / 2;
 		
-		ArrayList<String> owned = Player.currentPlayer.ownedNames();
+		ArrayList<String> owned = Player.player.ownedNames();
 		
 		for (TileResident resident : buildingOptions) {
 			JLabel name	= new JLabel(" " + resident.name(), SwingConstants.LEADING);
@@ -58,7 +59,7 @@ public class BuildMenu extends JPanel {
 				}
 			}
 			
-			if (resident.cost() > Player.currentPlayer.money || !canBuy) {
+			if (resident.cost() > Player.player.money || !canBuy) {
 				JLabel cover = new JLabel("");
 				cover.setOpaque(true);
 				cover.setBackground(new Color(0, 0, 0, 170));
@@ -87,7 +88,7 @@ public class BuildMenu extends JPanel {
 			return;
 		}
 		
-		ArrayList<String> owned = Player.currentPlayer.ownedNames();
+		ArrayList<String> owned = Player.player.ownedNames();
 		
 		TileResident building = this.buildingOptions[slot];
 		for (String name : building.prereqs()) {
@@ -97,14 +98,14 @@ public class BuildMenu extends JPanel {
 		}
 		
 		if (canBuy[slot]) {
-			Player.currentPlayer.money -= building.cost();
-			Player.currentPlayer.removeCanMake(building);
+			Player.player.money -= building.cost();
+			Player.player.removeCanMake(building);
 		} else {
 			return;
 		}
 		
 		try {
-			World.board.selectedTile.resident = building.getClass().getConstructor(Player.class).newInstance(Player.currentPlayer);
+			World.board.setSelectedResident(building.getClass().getConstructor(PlayerData.class).newInstance(PlayerData.me));
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			System.out.println("That constructor doesn't exist!");

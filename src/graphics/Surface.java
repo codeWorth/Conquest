@@ -18,7 +18,7 @@ public class Surface extends JPanel implements Runnable {
 	public static Surface instance = null;
 	
 	private Thread t;
-	private final int DELAY = 25;
+	private final int DELAY = 100;
 	private JPanel ui = null;
 		
 	public Surface() {

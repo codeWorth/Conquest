@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import javax.swing.JPanel;
 
-import game.Player;
+import game.PlayerData;
 import game.residents.interfaces.UnitDetails;
 import game.residents.interfaces.UnitInterface;
 
@@ -13,8 +13,8 @@ public class Spearman extends TileResident {
 	private int actionsLeft;
 	private boolean canAttack = true;
 	
-	public Spearman(Player player) {
-		this.player = player;
+	public Spearman(PlayerData playerData) {
+		this.playerData = playerData;
 		this.health = 2;
 	}
 	
