@@ -1,9 +1,13 @@
 package game.residents;
 
-import java.awt.Color;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import game.Board;
 import game.PlayerData;
 import game.residents.interfaces.ArmoryDetails;
 
@@ -17,6 +21,13 @@ public class Armory extends TileResident {
 	public Armory(PlayerData playerData) {
 		this.playerData = playerData;
 		this.health = 5;
+		
+		File file = new File("src/graphics/Icons/armory.bmp");
+		try {
+			image = ImageIO.read(file).getScaledInstance(Board.TILE_SIZE - 2, Board.TILE_SIZE - 2, Image.SCALE_SMOOTH);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -25,8 +36,8 @@ public class Armory extends TileResident {
 	}
 
 	@Override
-	public Color mapColor() {
-		return new Color(175, 179, 188);
+	public Image mapImage() {
+		return image;
 	}
 
 	@Override

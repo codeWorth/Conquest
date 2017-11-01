@@ -1,14 +1,28 @@
 package game.residents;
 
 import java.awt.Color;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import game.Board;
 import game.Player;
 import game.PlayerData;
 import game.residents.interfaces.BuildMenu;
 
 public class EmptyResident extends TileResident {
+	
+	public EmptyResident() {
+		File file = new File("src/graphics/Icons/empty.bmp");
+		try {
+			image = ImageIO.read(file).getScaledInstance(Board.TILE_SIZE, Board.TILE_SIZE, Image.SCALE_SMOOTH);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@Override
 	public boolean canBuildOn() {
@@ -21,8 +35,8 @@ public class EmptyResident extends TileResident {
 	}
 
 	@Override
-	public Color mapColor() {
-		return new Color(114, 204, 129);
+	public Image mapImage() {
+		return image;
 	}
 
 	@Override

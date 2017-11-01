@@ -1,6 +1,7 @@
 package game.residents;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -13,6 +14,7 @@ public abstract class TileResident {
 	
 	protected PlayerData playerData;
 	protected int health;
+	protected Image image;
 
 	public int moveRange() {
 		return 0;
@@ -25,10 +27,10 @@ public abstract class TileResident {
 	}
 	
 	public Color minimapColor() {
-		return Color.white;
+		return playerData.color;
 	}
 
-	public abstract Color mapColor();
+	public abstract Image mapImage();
 		
 	public boolean canSelect() {
 		return true;

@@ -19,8 +19,8 @@ public class Board implements Drawable {
 		NONE, ATTACK, MOVE;
 	}
 
-	public static final int TILE_SIZE = 50;
-	public static final int TILE_SPACING = 5;
+	public static final int TILE_SIZE = 64;
+	public static final int TILE_SPACING = 6;
 	public static final int TOTAL_TILE_SIZE = TILE_SIZE + TILE_SPACING;
 	public int totalWidth, totalHeight;
 	
@@ -74,6 +74,10 @@ public class Board implements Drawable {
 				}
 			}
 		}
+		
+		if (selectedTile != null) {
+			selectedTile.animateSelected(ctx);
+		}
 	}
 
 	@Override
@@ -88,7 +92,7 @@ public class Board implements Drawable {
 		if (!World.isMyTurn) {
 			BoardTile tile = tiles[x][y];
 			if (tile.resident.canSelect() && tile.resident.playerData() != PlayerData.noPlayer) {
-				tileTints[x][y] = TileTint.WHITE;
+				deselectTile();
 				Surface.instance.removeUI();
 				Sidebar.instance.addStats(tile.resident.statsPanel());
 			} else {
@@ -103,7 +107,6 @@ public class Board implements Drawable {
 				resetTiles();
 				
 				selectedTile = tiles[x][y];
-				tileTints[x][y] = TileTint.WHITE;
 				
 				Surface.instance.addUI(tiles[x][y].resident.userInterface());
 				Sidebar.instance.addStats(tiles[x][y].resident.statsPanel());
@@ -118,6 +121,7 @@ public class Board implements Drawable {
 		case ATTACK:
 			if (canShootHere[x][y]) {
 				selectedTile.resident.attack(tiles[x][y].resident);
+				NetworkClient.sendAttack(selectedTile.x, selectedTile.y, x, y);
 				selectedTile.resident.reduceActionsLeft(1);
 				
 				if (selectedTile.resident.health() <= 0) {
@@ -143,10 +147,7 @@ public class Board implements Drawable {
 			if (tiles[x][y].resident.playerData() == PlayerData.noPlayer) {
 				if (hasFriendlyBordering(x, y)) {
 					resetTiles();
-					
-					selectedTile = tiles[x][y];
-					tileTints[x][y] = TileTint.WHITE;
-					
+					selectedTile = tiles[x][y];					
 					Surface.instance.addUI(tiles[x][y].resident.userInterface());
 					Sidebar.instance.addStats(tiles[x][y].resident.statsPanel());
 				} else {
@@ -156,7 +157,6 @@ public class Board implements Drawable {
 				deselectTile();
 
 				if (tiles[x][y].resident.playerData() != PlayerData.noPlayer) {
-					tileTints[x][y] = TileTint.WHITE;
 					Surface.instance.removeUI();
 					Sidebar.instance.addStats(tiles[x][y].resident.statsPanel());
 				}
@@ -172,7 +172,6 @@ public class Board implements Drawable {
 						Surface.instance.removeUI();
 					}
 					
-					tileTints[x][y] = TileTint.WHITE;
 					Sidebar.instance.addStats(selectedTile.resident.statsPanel());
 				} else {
 					deselectTile();
@@ -209,7 +208,6 @@ public class Board implements Drawable {
 		int y = selectedTile.y;
 		
 		floodFillMovement(x, y, stepsLeft + 1);
-		tileTints[x][y] = TileTint.WHITE;
 		moveStepsLeft[x][y] = -1;
 	
 	}
@@ -272,7 +270,6 @@ public class Board implements Drawable {
 			}
 		}
 		
-		tileTints[x][y] = TileTint.WHITE;
 		canShootHere[x][y] = false;
 	}
 	

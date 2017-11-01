@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import game.Player;
+import game.PlayerData;
 import game.residents.interfaces.BuildMenu;
 import main.World;
 
@@ -37,7 +38,7 @@ public class Sidebar extends JPanel {
 			
 		turnLabel = new JLabel("Player 1", SwingConstants.CENTER);
 		turnLabel.setOpaque(true);
-		turnLabel.setBackground(Player.player.color);
+		turnLabel.setBackground(Color.white);
 		turnLabel.setFont(new Font("Helvetica", Font.PLAIN, 20));
 		turnLabel.setBounds((width - 110) / 2, 15, 110, 30);
 		turnLabel.setVerticalTextPosition(AbstractButton.CENTER);
@@ -86,6 +87,12 @@ public class Sidebar extends JPanel {
 			turnLabel.setText("Your Turn");
 			moneyLabel.setText(Integer.toString(Player.player.money) + " Gold");
 			unitsLabel.setText("Units: " + Player.player.ownedUnits() + "/" + Player.player.maxUnits());
+			
+			if (PlayerData.me == null) {
+				turnLabel.setBackground(Color.white);
+			} else {
+				turnLabel.setBackground(PlayerData.me.color);
+			}
 		} else {
 			endTurnButton.setVisible(false);
 			turnLabel.setVisible(false);

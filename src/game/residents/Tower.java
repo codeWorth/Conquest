@@ -9,21 +9,21 @@ import javax.swing.JPanel;
 
 import game.Board;
 import game.PlayerData;
-import game.residents.interfaces.UnitDetails;
-import game.residents.interfaces.UnitInterface;
+import game.residents.interfaces.TowerDetails;
+import game.residents.interfaces.TowerInterface;
 
-public class Spearman extends TileResident {
+public class Tower extends TileResident {
 
 	private int actionsLeft;
 	private boolean canAttack = true;
 	
-	public Spearman(PlayerData playerData) {
+	public Tower(PlayerData playerData) {
 		this.playerData = playerData;
-		this.health = 2;
+		this.health = 1;
 		
-		File file = new File("src/graphics/Icons/spear.bmp");
+		File file = new File("src/graphics/Icons/tower.bmp");
 		try {
-			image = ImageIO.read(file).getScaledInstance(Board.TILE_SIZE - 14, Board.TILE_SIZE - 14, Image.SCALE_SMOOTH);
+			image = ImageIO.read(file).getScaledInstance(Board.TILE_SIZE - 2, Board.TILE_SIZE - 2, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -31,12 +31,12 @@ public class Spearman extends TileResident {
 	
 	@Override
 	public int moveRange() {
-		return 2;
+		return 1;
 	}
 
 	@Override
 	public boolean canBuildOn() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -46,12 +46,12 @@ public class Spearman extends TileResident {
 
 	@Override
 	public int shootRange() {
-		return 1;
+		return 3;
 	}
 
 	@Override
 	public JPanel userInterface() {
-		return new UnitInterface(canAttack);
+		return new TowerInterface(canAttack);
 	}
 	
 	@Override
@@ -76,17 +76,17 @@ public class Spearman extends TileResident {
 
 	@Override
 	public JPanel statsPanel() {
-		return new UnitDetails(this);
+		return new TowerDetails(this);
 	}
 
 	@Override
 	public String name() {
-		return "Spearman";
+		return "Tower";
 	}
 
 	@Override
 	public int cost() {
-		return 4;
+		return 8;
 	}
 
 	public int actionsLeft() {
@@ -103,13 +103,8 @@ public class Spearman extends TileResident {
 	}
 	
 	@Override
-	public String[] prereqs() {
-		return new String[]{"Armory"};
+	public String toString() {
+		return "Tower:"+Integer.toString(this.health)+","+Integer.toString(this.actionsLeft)+","+Boolean.toString(canAttack);
 	}
 	
-
-	@Override
-	public String toString() {
-		return "Spearman:"+Integer.toString(this.health)+","+Integer.toString(this.actionsLeft)+","+Boolean.toString(canAttack);
-	}
 }

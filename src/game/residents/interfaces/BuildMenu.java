@@ -40,7 +40,7 @@ public class BuildMenu extends JPanel {
 		for (TileResident resident : buildingOptions) {
 			JLabel name	= new JLabel(" " + resident.name(), SwingConstants.LEADING);
 			name.setOpaque(true);
-			name.setBackground(resident.mapColor());
+			name.setBackground(Color.white); //name.setBackground(resident.mapColor());
 			name.setFont(new Font("Helvetica", Font.PLAIN, 16));
 			name.setVerticalTextPosition(AbstractButton.CENTER);
 			name.setBounds(xPos, i * spacing, 180, height);
@@ -62,7 +62,7 @@ public class BuildMenu extends JPanel {
 			if (resident.cost() > Player.player.money || !canBuy) {
 				JLabel cover = new JLabel("");
 				cover.setOpaque(true);
-				cover.setBackground(new Color(0, 0, 0, 170));
+				cover.setBackground(new Color(0, 0, 0, 140));
 				cover.setBounds(xPos, i * spacing, 180, height);
 				add(cover);
 			} else {

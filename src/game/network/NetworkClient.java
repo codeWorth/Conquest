@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import game.PlayerData;
+import game.residents.Archer;
 import game.residents.Armory;
 import game.residents.Base;
 import game.residents.EmptyResident;
@@ -17,6 +18,7 @@ import game.residents.Farm;
 import game.residents.Footman;
 import game.residents.Mine;
 import game.residents.Spearman;
+import game.residents.Tower;
 import main.World;
 
 public class NetworkClient {
@@ -35,10 +37,6 @@ public class NetworkClient {
         ) {
         	out = outTry;
         	String fromServer;
-        	
-        	String outString = "Player:"+PlayerData.me.name+","+PlayerData.me.color.getRed()+","+PlayerData.me.color.getGreen()+","+PlayerData.me.color.getBlue();
-        	out.println(outString);
-        	System.out.println("Out: " + outString);
         	
             while ((fromServer = in.readLine()) != null) {
             	System.out.println("In: " + fromServer);
@@ -73,7 +71,7 @@ public class NetworkClient {
 	}
 	
 	private static void proccessInput(String input) {
-		String[] parts = input.split("|");
+		String[] parts = input.split("\\|");
 		
 		if (parts[0].equals("Done")) {
 			
@@ -89,7 +87,11 @@ public class NetworkClient {
     		int b = Integer.parseInt(attributes[3]);
     		Color color = new Color(r, g, b);
     		
-    		datas.add(new PlayerData(name, color));
+    		PlayerData newPlayer = new PlayerData(name, color);
+    		datas.add(newPlayer);
+    		if (parts.length == 3) {
+    			PlayerData.me = newPlayer;
+    		}
 			
 		} else if (parts[0].equals("AllSent")) {
 			
@@ -97,13 +99,18 @@ public class NetworkClient {
 			
 		} else if (parts[0].equals("Damage")) {
 			
-			int x = Integer.parseInt(parts[0]);
-			int y = Integer.parseInt(parts[1]);
-			int endX = Integer.parseInt(parts[2]);
-			int endY = Integer.parseInt(parts[3]);
+			int x = Integer.parseInt(parts[1]);
+			int y = Integer.parseInt(parts[2]);
+			int endX = Integer.parseInt(parts[3]);
+			int endY = Integer.parseInt(parts[4]);
 			
 			World.board.tiles[x][y].resident.attack(World.board.tiles[endX][endY].resident);
+		} else if (parts[0].equals("Start")) {
 			
+			String outString = "Player|"+PlayerData.me.name+","+PlayerData.me.color.getRed()+","+PlayerData.me.color.getGreen()+","+PlayerData.me.color.getBlue();
+        	out.println(outString);
+        	System.out.println("Out: " + outString);
+		
 	    } else {
 			int x = Integer.parseInt(parts[0]);
 			int y = Integer.parseInt(parts[1]);
@@ -131,6 +138,12 @@ public class NetworkClient {
 				break;
 			case "Spearman":
 				World.board.tiles[x][y].resident = new Spearman(from);
+				break;
+			case "Archer":
+				World.board.tiles[x][y].resident = new Archer(from);
+				break;
+			case "Tower":
+				World.board.tiles[x][y].resident = new Tower(from);
 				break;
 			default:
 				System.out.println("invalid input resident");

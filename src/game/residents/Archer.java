@@ -12,26 +12,27 @@ import game.PlayerData;
 import game.residents.interfaces.UnitDetails;
 import game.residents.interfaces.UnitInterface;
 
-public class Spearman extends TileResident {
+public class Archer extends TileResident {
 
 	private int actionsLeft;
 	private boolean canAttack = true;
 	
-	public Spearman(PlayerData playerData) {
+	public Archer(PlayerData playerData) {
 		this.playerData = playerData;
-		this.health = 2;
+		this.health = 1;
 		
-		File file = new File("src/graphics/Icons/spear.bmp");
+		File file = new File("src/graphics/Icons/bow.bmp");
 		try {
 			image = ImageIO.read(file).getScaledInstance(Board.TILE_SIZE - 14, Board.TILE_SIZE - 14, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 	}
 	
 	@Override
 	public int moveRange() {
-		return 2;
+		return 1;
 	}
 
 	@Override
@@ -46,7 +47,7 @@ public class Spearman extends TileResident {
 
 	@Override
 	public int shootRange() {
-		return 1;
+		return 2;
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class Spearman extends TileResident {
 	
 	@Override
 	public int damage() {
-		return 2;
+		return 1;
 	}
 
 	@Override
@@ -81,12 +82,12 @@ public class Spearman extends TileResident {
 
 	@Override
 	public String name() {
-		return "Spearman";
+		return "Archer";
 	}
 
 	@Override
 	public int cost() {
-		return 4;
+		return 2;
 	}
 
 	public int actionsLeft() {
@@ -103,13 +104,9 @@ public class Spearman extends TileResident {
 	}
 	
 	@Override
-	public String[] prereqs() {
-		return new String[]{"Armory"};
+	public String toString() {
+		return "Archer:"+Integer.toString(this.health)+","+Integer.toString(this.actionsLeft)+","+Boolean.toString(canAttack);
 	}
 	
-
-	@Override
-	public String toString() {
-		return "Spearman:"+Integer.toString(this.health)+","+Integer.toString(this.actionsLeft)+","+Boolean.toString(canAttack);
-	}
 }
+

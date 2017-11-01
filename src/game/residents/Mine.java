@@ -1,9 +1,13 @@
 package game.residents;
 
-import java.awt.Color;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import game.Board;
 import game.Player;
 import game.PlayerData;
 import game.residents.interfaces.MineDetails;
@@ -17,10 +21,17 @@ public class Mine extends TileResident {
 		this.playerData = playerData;
 		this.cost = cost;
 		this.health = 4;	
+		
+		File file = new File("src/graphics/Icons/goldmine.bmp");
+		try {
+			image = ImageIO.read(file).getScaledInstance(Board.TILE_SIZE - 2, Board.TILE_SIZE - 2, Image.SCALE_SMOOTH);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public Mine(PlayerData playerData) {
-		this(playerData, 4);
+		this(playerData, 7);
 	}
 
 	@Override
@@ -29,8 +40,8 @@ public class Mine extends TileResident {
 	}
 
 	@Override
-	public Color mapColor() {
-		return new Color(218, 242, 155);
+	public Image mapImage() {
+		return image;
 	}
 
 	@Override
@@ -66,7 +77,7 @@ public class Mine extends TileResident {
 
 	@Override
 	public String toString() {
-		return "Base:"+Integer.toString(this.health)+","+Integer.toString(cost);
+		return "Mine:"+Integer.toString(this.health)+","+Integer.toString(cost);
 	}
 
 }

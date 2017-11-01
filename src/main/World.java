@@ -45,6 +45,7 @@ public class World {
 			}
 		});
 		
+		Player.player = new Player(new Color(114, 181, 204));
 		networkThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -60,6 +61,7 @@ public class World {
 		if (!myTurn) {
 			NetworkClient.sendEndTurn();
 			isMyTurn = false;
+			Sidebar.detailsStart = 20;
 		} else {
 			isMyTurn = true;
 			Sidebar.detailsStart = 210;

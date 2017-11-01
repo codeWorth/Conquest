@@ -3,6 +3,7 @@ package game;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import game.residents.Archer;
 import game.residents.Armory;
 import game.residents.Base;
 import game.residents.Farm;
@@ -10,23 +11,21 @@ import game.residents.Footman;
 import game.residents.Mine;
 import game.residents.Spearman;
 import game.residents.TileResident;
+import game.residents.Tower;
 import main.World;
 
 public class Player {
 	
-	public static Player player = new Player(new Color(114, 181, 204));
+	public static Player player;
 
 	public String name = "Andrew";
 	public boolean needPlaceBase = true;
 	public int money = 0;
-	private boolean boughtBuildingThisTurn = false;
-	public Color color;
 	private ArrayList<TileResident> limitedSupply = new ArrayList<>();
 	private ArrayList<TileResident> canMake = new ArrayList<>();
 	
 	public Player(Color color) {
-		this.color = color;
-		PlayerData.me = new PlayerData(this.name, this.color);
+		PlayerData.me = new PlayerData(this.name, color);
 		
 		this.addLimited(new Base(PlayerData.me));
 	}
@@ -45,15 +44,9 @@ public class Player {
 			this.limitedSupply.remove(resident);
 			this.needPlaceBase = false;
 		}
-		
-		if (resident.canBuildOn() == true) {
-			this.boughtBuildingThisTurn = true;
-		}
 	}
 		
-	public void turnStart() {
-		boughtBuildingThisTurn = false;
-		
+	public void turnStart() {		
 		for (int i = 0; i < World.board.tiles.length; i++) {
 			for (int j = 0; j < World.board.tiles[i].length; j++) {
 				BoardTile currentTile = World.board.tiles[i][j];
@@ -78,15 +71,15 @@ public class Player {
 		}
 		
 		//add back non limited resources
-		if (!boughtBuildingThisTurn) {
-			canMake.add(new Mine(PlayerData.me));
-			canMake.add(new Farm(PlayerData.me));
-			canMake.add(new Armory(PlayerData.me));
-		}
+		canMake.add(new Mine(PlayerData.me));
+		canMake.add(new Farm(PlayerData.me));
+		canMake.add(new Armory(PlayerData.me));
+		canMake.add(new Tower(PlayerData.me));
 		
 		if (this.ownedUnits() < this.maxUnits()) {
 			canMake.add(new Footman(PlayerData.me));
 			canMake.add(new Spearman(PlayerData.me));
+			canMake.add(new Archer(PlayerData.me));
 		}
 		
 		return canMake.toArray(new TileResident[canMake.size()]);

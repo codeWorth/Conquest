@@ -1,9 +1,13 @@
 package game.residents;
 
-import java.awt.Color;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import game.Board;
 import game.PlayerData;
 import game.residents.interfaces.FarmDetails;
 
@@ -12,6 +16,13 @@ public class Farm extends TileResident {
 	public Farm(PlayerData playerData) {
 		this.playerData = playerData;
 		this.health = 5;	
+		
+		File file = new File("src/graphics/Icons/farm.bmp");
+		try {
+			image = ImageIO.read(file).getScaledInstance(Board.TILE_SIZE - 2, Board.TILE_SIZE - 2, Image.SCALE_SMOOTH);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -20,8 +31,8 @@ public class Farm extends TileResident {
 	}
 
 	@Override
-	public Color mapColor() {
-		return new Color(238, 229, 201);
+	public Image mapImage() {
+		return image;
 	}
 
 	@Override
@@ -56,7 +67,7 @@ public class Farm extends TileResident {
 
 	@Override
 	public int maxUnitsBuff() {
-		return 2;
+		return 3;
 	}
 
 	@Override
