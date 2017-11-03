@@ -9,11 +9,13 @@ import javax.swing.Timer;
 import game.Board;
 import game.Player;
 import game.network.NetworkClient;
+import game.residents.GoldResource;
 import graphics.Camera;
 import graphics.Minimap;
 import graphics.Sidebar;
 import util.actions.Action;
 import util.input.InputBinds;
+import util.math.TerrainGenerator;
 
 public class World {
 
@@ -32,6 +34,15 @@ public class World {
 	public static void initialize() {		
 		board = new Board(25, 25);
 		minimap = new Minimap(50, 50, 4);
+		boolean[][] golds = TerrainGenerator.generateTerrain(25, 25, 6, 0.2, 0.4);
+		
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 25; j++) {
+				if (golds[i][j]) {
+					board.tiles[i][j].resident = new GoldResource();
+				}
+			}
+		}
 		
 		InputBinds.selectedTile.addClickAction(new Action(null) {
 			@Override

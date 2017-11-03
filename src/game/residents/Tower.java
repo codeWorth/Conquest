@@ -106,5 +106,16 @@ public class Tower extends TileResident {
 	public String toString() {
 		return "Tower:"+Integer.toString(this.health)+","+Integer.toString(this.actionsLeft)+","+Boolean.toString(canAttack);
 	}
+
+	@Override
+	public int healthIncrease() {
+		return 0;
+	}
+
+	@Override
+	public int damageIncrease() {
+		return 0;
+	}
 	
 }
+

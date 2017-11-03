@@ -86,4 +86,13 @@ public class Base extends TileResident {
 		return "Base:"+Integer.toString(this.health);
 	}
 
+	@Override
+	public int healthIncrease() {
+		return 0;
+	}
+
+	@Override
+	public int damageIncrease() {
+		return 0;
+	}
 }

@@ -16,7 +16,7 @@ import game.residents.TileResident;
 import graphics.Sidebar;
 import main.World;
 
-public class BuildMenu extends JPanel {
+public class BuildMenu extends JPanel implements Clickable {
 	
 	private TileResident[] buildingOptions;
 	private boolean[] canBuy;

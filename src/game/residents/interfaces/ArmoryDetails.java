@@ -8,16 +8,21 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import game.PlayerData;
 import game.residents.Armory;
+import game.residents.Upgrade;
 import graphics.Sidebar;
 
-public class ArmoryDetails extends JPanel {
+public class ArmoryDetails extends JPanel implements Clickable {
 
-	public ArmoryDetails(Armory resident) {
+	private static final int buyMenuStart = 200;
+	private UpgradePanel upgradePanel;
+	
+	public ArmoryDetails(Armory resident, Upgrade[] upgrades) {
 		setLayout(null);
 		setOpaque(false);
 		setBounds(0, Sidebar.detailsStart, Sidebar.width, 400);
-		
+				
 		JLabel playerName = new JLabel("Player: " + resident.playerData().name, SwingConstants.CENTER);
 		playerName.setOpaque(true);
 		playerName.setBackground(resident.playerData().color);
@@ -46,10 +51,21 @@ public class ArmoryDetails extends JPanel {
 		allowedUnitsLabel.setBackground(new Color(234, 204, 187));
 		allowedUnitsLabel.setFont(new Font("Helvetica", Font.PLAIN, 20));
 		allowedUnitsLabel.setBounds((Sidebar.width - 150) / 2, 105, 150, 70);
-		allowedUnitsLabel.setVerticalTextPosition(AbstractButton.CENTER);
+		allowedUnitsLabel.setVerticalTextPosition(AbstractButton.CENTER);		
 		
 		add(healthLabel);
 		add(allowedUnitsLabel);
+		
+		if (resident.playerData() == PlayerData.me) {
+			upgradePanel = new UpgradePanel(upgrades);
+			upgradePanel.setBounds(0, buyMenuStart, Sidebar.width, 600);
+			add(upgradePanel);
+		}
+	}
+	
+	@Override
+	public void pressed(double x, double y) {
+		upgradePanel.pressed(x, y - buyMenuStart);
 	}
 	
 }

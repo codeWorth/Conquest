@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import game.residents.Archer;
 import game.residents.Armory;
 import game.residents.Base;
+import game.residents.Cavalry;
 import game.residents.Farm;
 import game.residents.Footman;
-import game.residents.Mine;
 import game.residents.Spearman;
 import game.residents.TileResident;
 import game.residents.Tower;
@@ -18,9 +18,14 @@ public class Player {
 	
 	public static Player player;
 
+	public int lightHealthIncrease;
+	public int heavyHealthIncrease;
+	public int lightDamageIncrease;
+	public int heavyDamageIncrease;
+	
 	public String name = "Andrew";
 	public boolean needPlaceBase = true;
-	public int money = 0;
+	public int money = 14;
 	private ArrayList<TileResident> limitedSupply = new ArrayList<>();
 	private ArrayList<TileResident> canMake = new ArrayList<>();
 	
@@ -39,8 +44,8 @@ public class Player {
 		this.canMake.remove(resident);
 		
 		if (resident instanceof Base) {
-			this.addLimited(new Mine(PlayerData.me, 0));
-			this.addLimited(new Mine(PlayerData.me, 0));
+			//this.addLimited(new Mine(PlayerData.me, 0));
+			//this.addLimited(new Mine(PlayerData.me, 0));
 			this.limitedSupply.remove(resident);
 			this.needPlaceBase = false;
 		}
@@ -71,7 +76,6 @@ public class Player {
 		}
 		
 		//add back non limited resources
-		canMake.add(new Mine(PlayerData.me));
 		canMake.add(new Farm(PlayerData.me));
 		canMake.add(new Armory(PlayerData.me));
 		canMake.add(new Tower(PlayerData.me));
@@ -79,6 +83,7 @@ public class Player {
 		if (this.ownedUnits() < this.maxUnits()) {
 			canMake.add(new Footman(PlayerData.me));
 			canMake.add(new Spearman(PlayerData.me));
+			canMake.add(new Cavalry(PlayerData.me));
 			canMake.add(new Archer(PlayerData.me));
 		}
 		
@@ -113,6 +118,28 @@ public class Player {
 		}
 		
 		return max;
+	}
+	
+	public void setBuffs() {
+		this.lightHealthIncrease = 0;
+		this.lightDamageIncrease = 0;
+		this.heavyHealthIncrease = 0;
+		this.heavyDamageIncrease = 0;
+		
+		for (int i = 0; i < World.board.tiles.length; i++) {
+			for (int j = 0; j < World.board.tiles[i].length; j++) {
+				BoardTile currentTile = World.board.tiles[i][j];
+				if (currentTile.resident.playerData() == PlayerData.me) {
+					if (currentTile.resident instanceof Armory) {
+						Armory armory = (Armory)currentTile.resident;
+						this.lightHealthIncrease += armory.lightHealthBuff;
+						this.lightDamageIncrease += armory.lightDamageBuff;
+						this.heavyHealthIncrease += armory.heavyHealthBuff;
+						this.heavyDamageIncrease += armory.lightHealthBuff;
+					}
+				}
+			}
+		}
 	}
 	
 	public ArrayList<String> ownedNames() {

@@ -15,6 +15,7 @@ public abstract class TileResident {
 	protected PlayerData playerData;
 	protected int health;
 	protected Image image;
+	protected boolean dead = false;
 
 	public int moveRange() {
 		return 0;
@@ -37,7 +38,12 @@ public abstract class TileResident {
 	}
 	
 	public int health() {
-		return this.health;
+		if (this.dead) {
+			return 0;
+		} else if (this.health + this.healthIncrease() <= 0) {
+			this.health = 1 - this.healthIncrease();
+		}
+		return this.health + this.healthIncrease();
 	}
 	
 	public int shootRange() {
@@ -45,9 +51,16 @@ public abstract class TileResident {
 	}
 	
 	public abstract JPanel userInterface();
+	
+	public abstract int healthIncrease();
+	public abstract int damageIncrease();
 
 	public void takeDamage(int damage) {
 		this.health -= damage;
+		
+		if (this.health() <= 0) {
+			this.dead = true;
+		}
 	}
 	
 	public PlayerData playerData() {

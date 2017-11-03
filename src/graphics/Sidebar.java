@@ -13,7 +13,7 @@ import javax.swing.SwingConstants;
 
 import game.Player;
 import game.PlayerData;
-import game.residents.interfaces.BuildMenu;
+import game.residents.interfaces.Clickable;
 import main.World;
 
 public class Sidebar extends JPanel {
@@ -103,11 +103,10 @@ public class Sidebar extends JPanel {
 	
 	public void press(double mouseX, double mouseY) {
 		if (mouseY > detailsStart && this.stats != null) {
-			if (this.stats instanceof BuildMenu) {
-				BuildMenu menu = (BuildMenu)this.stats;
+			if (this.stats instanceof Clickable) {
+				Clickable menu = (Clickable)this.stats;
 				menu.pressed(mouseX, mouseY - detailsStart);
 			}
-			
 			return;
 		}
 	}

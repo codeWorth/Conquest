@@ -19,8 +19,8 @@ public class Board implements Drawable {
 		NONE, ATTACK, MOVE;
 	}
 
-	public static final int TILE_SIZE = 64;
-	public static final int TILE_SPACING = 6;
+	public static final int TILE_SIZE = 80;
+	public static final int TILE_SPACING = 7;
 	public static final int TOTAL_TILE_SIZE = TILE_SIZE + TILE_SPACING;
 	public int totalWidth, totalHeight;
 	
@@ -30,10 +30,12 @@ public class Board implements Drawable {
 	public BoardTile[][] tiles;
 	public void setResident(int x, int y, TileResident resident) {
 		tiles[x][y].resident = resident;
+		Player.player.setBuffs();
 		NetworkClient.sendChange(x, y);
 	}
 	public void setSelectedResident(TileResident resident) {
 		selectedTile.resident = resident;
+		Player.player.setBuffs();
 		NetworkClient.sendChange(selectedTile.x, selectedTile.y);
 	}
 	

@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import game.Board;
+import game.Player;
 import game.PlayerData;
 import game.residents.interfaces.UnitDetails;
 import game.residents.interfaces.UnitInterface;
@@ -72,7 +73,7 @@ public class Archer extends TileResident {
 	
 	@Override
 	public int damage() {
-		return 1;
+		return 1 + damageIncrease();
 	}
 
 	@Override
@@ -107,6 +108,15 @@ public class Archer extends TileResident {
 	public String toString() {
 		return "Archer:"+Integer.toString(this.health)+","+Integer.toString(this.actionsLeft)+","+Boolean.toString(canAttack);
 	}
-	
+
+	@Override
+	public int healthIncrease() {
+		return Player.player.lightHealthIncrease;
+	}
+
+	@Override
+	public int damageIncrease() {
+		return Player.player.lightDamageIncrease;
+	}
 }
 

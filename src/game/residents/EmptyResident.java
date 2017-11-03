@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -16,7 +17,17 @@ import game.residents.interfaces.BuildMenu;
 public class EmptyResident extends TileResident {
 	
 	public EmptyResident() {
-		File file = new File("src/graphics/Icons/empty.bmp");
+		Random rand = new Random();
+		int index = rand.nextInt(3);
+		File file = null;
+		if (index == 0) {
+			file = new File("src/graphics/Icons/empty.bmp");
+		} else if (index == 1) {
+			file = new File("src/graphics/Icons/empty1.bmp");
+		} else if (index == 2) {
+			file = new File("src/graphics/Icons/empty2.bmp");
+		}
+		
 		try {
 			image = ImageIO.read(file).getScaledInstance(Board.TILE_SIZE, Board.TILE_SIZE, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
@@ -96,5 +107,15 @@ public class EmptyResident extends TileResident {
 	@Override
 	public String toString() {
 		return "EmptyResident:";
+	}
+
+	@Override
+	public int healthIncrease() {
+		return 0;
+	}
+
+	@Override
+	public int damageIncrease() {
+		return 0;
 	}
 }

@@ -13,12 +13,15 @@ import game.PlayerData;
 import game.residents.Archer;
 import game.residents.Armory;
 import game.residents.Base;
+import game.residents.Cavalry;
 import game.residents.EmptyResident;
 import game.residents.Farm;
 import game.residents.Footman;
 import game.residents.Mine;
 import game.residents.Spearman;
+import game.residents.TileResident;
 import game.residents.Tower;
+import game.residents.Upgradeable;
 import main.World;
 
 public class NetworkClient {
@@ -70,6 +73,12 @@ public class NetworkClient {
 		System.out.println("Out: " + outString);
 	}
 	
+	public static void sendUpgrade(int x, int y, int slot) {
+		String outString = "Upgrade|"+Integer.toString(x)+"|"+Integer.toString(y)+"|"+Integer.toString(slot);
+		out.println(outString);
+		System.out.println("Out: " + outString);
+	}
+		
 	private static void proccessInput(String input) {
 		String[] parts = input.split("\\|");
 		
@@ -110,7 +119,17 @@ public class NetworkClient {
 			String outString = "Player|"+PlayerData.me.name+","+PlayerData.me.color.getRed()+","+PlayerData.me.color.getGreen()+","+PlayerData.me.color.getBlue();
         	out.println(outString);
         	System.out.println("Out: " + outString);
-		
+		} else if (parts[0].equals("Upgrade")) {
+			
+			int x = Integer.parseInt(parts[0]);
+			int y = Integer.parseInt(parts[1]);
+			int slot = Integer.parseInt(parts[2]);
+			TileResident resident = World.board.tiles[x][y].resident;
+			if (resident instanceof Upgradeable) {
+				Upgradeable upgradeable = (Upgradeable)resident;
+				upgradeable.upgrade(slot);
+			}
+        
 	    } else {
 			int x = Integer.parseInt(parts[0]);
 			int y = Integer.parseInt(parts[1]);
@@ -145,10 +164,13 @@ public class NetworkClient {
 			case "Tower":
 				World.board.tiles[x][y].resident = new Tower(from);
 				break;
+			case "Cavalry":
+				World.board.tiles[x][y].resident = new Cavalry(from);
+				break;
 			default:
 				System.out.println("invalid input resident");
 				break;
-			}			
+			}		
 		}
 	}
 	

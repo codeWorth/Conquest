@@ -8,15 +8,20 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import game.PlayerData;
 import game.residents.Mine;
+import game.residents.Upgrade;
 import graphics.Sidebar;
 
-public class MineDetails extends JPanel {
+public class MineDetails extends JPanel implements Clickable {
 
+	private static final int buyMenuStart = 200;
+	private UpgradePanel upgradePanel;
+	
 	private static JLabel healthLabel;
 	private static JLabel perTurnLabel;
 	
-	public MineDetails(Mine resident) {
+	public MineDetails(Mine resident, Upgrade[] upgrades) {
 		setLayout(null);
 		setOpaque(false);
 		setBounds(0, Sidebar.detailsStart, Sidebar.width, 400);
@@ -56,6 +61,17 @@ public class MineDetails extends JPanel {
 		
 		add(healthLabel);
 		add(perTurnLabel);
+		
+		if (resident.playerData() == PlayerData.me) {
+			upgradePanel = new UpgradePanel(upgrades);
+			upgradePanel.setBounds(0, buyMenuStart, Sidebar.width, 600);
+			add(upgradePanel);
+		}
+	}
+
+	@Override
+	public void pressed(double x, double y) {
+		upgradePanel.pressed(x, y - buyMenuStart);
 	}
 	
 }
