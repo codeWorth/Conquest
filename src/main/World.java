@@ -34,7 +34,7 @@ public class World {
 	public static void initialize() {		
 		board = new Board(25, 25);
 		minimap = new Minimap(50, 50, 4);
-		boolean[][] golds = TerrainGenerator.generateTerrain(25, 25, 6, 0.2, 0.4);
+		boolean[][] golds = TerrainGenerator.generateTerrain(25, 25, 4, 0.15, 0.5);
 		
 		for (int i = 0; i < 25; i++) {
 			for (int j = 0; j < 25; j++) {
