@@ -4,9 +4,13 @@ import java.awt.Color;
 import java.awt.Image;
 import java.util.ArrayList;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import game.BoardTile;
+import game.OT;
 import game.PlayerData;
+import main.World;
 
 public abstract class TileResident {
 	
@@ -14,8 +18,12 @@ public abstract class TileResident {
 	
 	protected PlayerData playerData;
 	protected int health;
+	protected int maxHealth;
 	protected Image image;
 	protected boolean dead = false;
+	
+	public ArrayList<OT> ots = new ArrayList<>();
+	public BoardTile location;
 
 	public int moveRange() {
 		return 0;
@@ -52,14 +60,24 @@ public abstract class TileResident {
 	
 	public abstract JPanel userInterface();
 	
-	public abstract int healthIncrease();
-	public abstract int damageIncrease();
+	public int healthIncrease() {
+		return 0;
+	}
+
+	public int damageIncrease() {
+		return 0;
+	}
 
 	public void takeDamage(int damage) {
 		this.health -= damage;
 		
-		if (this.health() <= 0) {
+		if (this.health + this.healthIncrease() <= 0) {
 			this.dead = true;
+			World.board.setResident(this.location.x, this.location.y, new EmptyResident());
+		}
+		
+		if (this.health() > this.maxHealth + this.healthIncrease()) {
+			this.health = this.maxHealth;
 		}
 	}
 	
@@ -67,7 +85,13 @@ public abstract class TileResident {
 		return this.playerData;
 	}
 	
+	protected void turnStart() {
+	}
 	public void startOfTurnEffect() {
+		for (OT ot : this.ots) {
+			ot.startOfTurnTick();
+		}
+		turnStart();
 	}
 	
 	public int actionsLeft() {
@@ -85,7 +109,10 @@ public abstract class TileResident {
 		return 0;
 	}
 	
-	public abstract JPanel statsPanel();
+	public JComponent statsPanel() {
+		return statsPanel(false);
+	}
+	public abstract JComponent statsPanel(boolean info);
 	
 	public abstract String name();
 		
@@ -100,5 +127,15 @@ public abstract class TileResident {
 	}
 	
 	public abstract String toString();
+	
+	public int distanceTo(TileResident other) {
+		int dX = Math.abs(other.location.x - this.location.x);
+		int dY = Math.abs(other.location.y - this.location.y);
+		return dX + dY;
+	}
+	
+	public boolean canTarget(TileResident resident) {
+		return resident.health() > 0 && resident.playerData() != PlayerData.me;
+	}
 	
 }

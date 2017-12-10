@@ -2,11 +2,12 @@ package game.residents;
 
 import java.awt.Color;
 import java.awt.Image;
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import game.Board;
@@ -19,13 +20,13 @@ public class EmptyResident extends TileResident {
 	public EmptyResident() {
 		Random rand = new Random();
 		int index = rand.nextInt(3);
-		File file = null;
+		URL file = null;
 		if (index == 0) {
-			file = new File("src/graphics/Icons/empty.bmp");
+			file = getClass().getClassLoader().getResource("empty.bmp");
 		} else if (index == 1) {
-			file = new File("src/graphics/Icons/empty1.bmp");
+			file = getClass().getClassLoader().getResource("empty1.bmp");
 		} else if (index == 2) {
-			file = new File("src/graphics/Icons/empty2.bmp");
+			file = getClass().getClassLoader().getResource("empty2.bmp");
 		}
 		
 		try {
@@ -80,7 +81,7 @@ public class EmptyResident extends TileResident {
 	}
 
 	@Override
-	public JPanel statsPanel() {
+	public JComponent statsPanel(boolean info) {
 		return new BuildMenu(Player.player.makeOptions());
 	}
 
@@ -109,13 +110,5 @@ public class EmptyResident extends TileResident {
 		return "EmptyResident:";
 	}
 
-	@Override
-	public int healthIncrease() {
-		return 0;
-	}
-
-	@Override
-	public int damageIncrease() {
-		return 0;
-	}
+	
 }

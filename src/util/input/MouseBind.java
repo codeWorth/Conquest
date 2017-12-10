@@ -16,6 +16,7 @@ public class MouseBind implements MouseMotionListener, MouseListener {
 	public double mouseY = 0;
 	private ArrayList<Action> moveActions = new ArrayList<Action>();
 	private ArrayList<Action> clickActions = new ArrayList<Action>();
+	private ArrayList<Action> rightClickActions = new ArrayList<Action>();
 	
 	public double centerX = 0;
 	public double centerY = 0;
@@ -32,6 +33,10 @@ public class MouseBind implements MouseMotionListener, MouseListener {
 	
 	public void addClickAction(Action action) {
 		this.clickActions.add(action);
+	}
+	
+	public void addRightClickAction(Action action) {
+		this.rightClickActions.add(action);
 	}
 	
 	@Override
@@ -60,8 +65,14 @@ public class MouseBind implements MouseMotionListener, MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		for (Action act : clickActions) {
-			act.execute();
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			for (Action act : clickActions) {
+				act.execute();
+			}
+		} else if (e.getButton() == MouseEvent.BUTTON3) {
+			for (Action act : rightClickActions) {
+				act.execute();
+			}
 		}
 	}
 

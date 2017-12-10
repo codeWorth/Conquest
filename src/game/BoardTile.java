@@ -2,7 +2,6 @@ package game;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.Rectangle;
 
 import game.residents.EmptyResident;
@@ -12,7 +11,15 @@ import graphics.Drawable;
 
 public class BoardTile implements Drawable {
 	
-	public TileResident resident;
+	private TileResident resident;
+	public TileResident resident() {
+		return this.resident;
+	}
+	public void setResident(TileResident resident) {
+		this.resident = resident;
+		resident.location = this;
+	}
+	
 	public int x, y;
 	
 	private int animIndex = 0;
@@ -112,70 +119,3 @@ public class BoardTile implements Drawable {
 	}
 	
 }
-
-/*
-private static final int boxesPerSide = 3;
-	private static final int boxLength = 10;
-	private static final int spaceLength = animLength - boxLength;
- */
-
-/* int x = -animLength + animIndex;
-Rectangle shape = new Rectangle(leftX, topY, boxLength + x, Board.TILE_SPACING);
-ctx.fill(shape);
-int boxLengthRightSide = -x;
-x = (boxesPerSide - 1) * animLength + animIndex;
-shape = new Rectangle(x + leftX, topY, boxLengthRightSide - Board.TILE_SPACING, Board.TILE_SPACING);
-ctx.fill(shape);
-
-x = animIndex - spaceLength;
-shape = new Rectangle(rightX - x, bottomY - Board.TILE_SPACING, animIndex - spaceLength, Board.TILE_SPACING);
-ctx.fill(shape);
-shape = new Rectangle(leftX + Board.TILE_SPACING, bottomY - Board.TILE_SPACING, boxLength - animIndex, Board.TILE_SPACING);
-ctx.fill(shape);
-
-int y = -animLength + animIndex;
-shape = new Rectangle(rightX - Board.TILE_SPACING, topY, Board.TILE_SPACING, boxLength + y);
-ctx.fill(shape);
-int boxLengthBottomSide = -y;
-y = (boxesPerSide - 1) * animLength + animIndex;
-shape = new Rectangle(rightX - Board.TILE_SPACING, y + topY, Board.TILE_SPACING, boxLengthBottomSide - Board.TILE_SPACING);
-ctx.fill(shape);
-
-y = animIndex - spaceLength;
-shape = new Rectangle(leftX, bottomY - y, Board.TILE_SPACING, animIndex - spaceLength);
-ctx.fill(shape);
-shape = new Rectangle(leftX, topY + Board.TILE_SPACING, Board.TILE_SPACING, boxLength - animIndex);
-ctx.fill(shape);
-
-shape = new Rectangle(leftX, topY, Board.TILE_SPACING, Board.TILE_SPACING);
-ctx.fill(shape);
-shape = new Rectangle(rightX - Board.TILE_SPACING, topY, Board.TILE_SPACING, Board.TILE_SPACING);
-ctx.fill(shape);
-shape = new Rectangle(leftX, bottomY - Board.TILE_SPACING, Board.TILE_SPACING, Board.TILE_SPACING);
-ctx.fill(shape);
-shape = new Rectangle(rightX - Board.TILE_SPACING, bottomY - Board.TILE_SPACING, Board.TILE_SPACING, Board.TILE_SPACING);
-ctx.fill(shape);
-
-for (int i = 0; i < boxesPerSide - 1; i++) {
-	x = i * animLength + animIndex;
-	shape = new Rectangle(x + leftX, topY, boxLength, Board.TILE_SPACING);
-	ctx.fill(shape);
-}
-
-for (int i = 1; i < boxesPerSide; i++) {
-	x = rightX - (animIndex - spaceLength) - i * animLength;
-	shape = new Rectangle(x, bottomY - Board.TILE_SPACING, boxLength, Board.TILE_SPACING);
-	ctx.fill(shape);
-}
-
-for (int i = 0; i < boxesPerSide - 1; i++) {
-	y = i * animLength + animIndex;
-	shape = new Rectangle(rightX - Board.TILE_SPACING, y + topY, Board.TILE_SPACING, boxLength);
-	ctx.fill(shape);
-}
-
-for (int i = 1; i < boxesPerSide; i++) {
-	y = bottomY - (animIndex - spaceLength) - i * animLength;
-	shape = new Rectangle(leftX, y, Board.TILE_SPACING, boxLength);
-	ctx.fill(shape);
-} */

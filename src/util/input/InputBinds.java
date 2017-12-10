@@ -12,7 +12,7 @@ public class InputBinds {
 	public static Keybind screenRight;
 	public static Keybind showMinimap;
 	
-	public static MouseBind selectedTile = new MouseBind();
+	public static MouseBind mouse = new MouseBind();
 	
 	public static void bind(JPanel bindTo) {		
 		screenUp = new Keybind(KeyEvent.VK_UP, bindTo, "screenNorth");
@@ -21,8 +21,8 @@ public class InputBinds {
 		screenRight = new Keybind(KeyEvent.VK_RIGHT, bindTo, "screenRight");
 		showMinimap = new Keybind(KeyEvent.VK_TAB, bindTo, "showMinimap");
 		
-		bindTo.addMouseMotionListener(selectedTile);
-		bindTo.addMouseListener(selectedTile);
+		bindTo.addMouseMotionListener(mouse);
+		bindTo.addMouseListener(mouse);
 	}
 	
 }

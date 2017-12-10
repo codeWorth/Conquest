@@ -2,20 +2,23 @@ package game.residents;
 
 import java.awt.Color;
 import java.awt.Image;
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import game.Board;
+import game.Player;
 import game.PlayerData;
+import game.residents.buildings.Mine;
 import game.residents.interfaces.BuildMenu;
 
 public class GoldResource extends TileResident {
 
 	public GoldResource() {
-		File file = new File("src/graphics/Icons/gold.bmp");
+		URL file = getClass().getClassLoader().getResource("gold.bmp");
 		try {
 			image = ImageIO.read(file).getScaledInstance(Board.TILE_SIZE, Board.TILE_SIZE, Image.SCALE_SMOOTH);
 		} catch (IOException e) {
@@ -68,8 +71,13 @@ public class GoldResource extends TileResident {
 	}
 
 	@Override
-	public JPanel statsPanel() {
-		return new BuildMenu(new TileResident[]{new Mine(PlayerData.noPlayer)});
+	public JComponent statsPanel(boolean info) {
+		if (!Player.player.needPlaceBase) {
+			Player.player.ownedMines();
+			return new BuildMenu(new TileResident[]{new Mine(PlayerData.noPlayer)});
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -97,14 +105,6 @@ public class GoldResource extends TileResident {
 		return "GoldResource:";
 	}
 
-	@Override
-	public int healthIncrease() {
-		return 0;
-	}
-
-	@Override
-	public int damageIncrease() {
-		return 0;
-	}
+	
 	
 }

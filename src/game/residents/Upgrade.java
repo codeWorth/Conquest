@@ -3,6 +3,7 @@ package game.residents;
 import java.awt.Color;
 
 import game.Player;
+import game.PlayerData;
 
 public class Upgrade {
 
@@ -18,12 +19,15 @@ public class Upgrade {
 		this.cost = cost;
 	}
 	
-	public Upgrade run() {
+	public Upgrade run(PlayerData playerData) {
 		this.action.run();
-		Player.player.money -= this.cost;
+		if (playerData == PlayerData.me) {
+			Player.player.money -= this.cost;
+		}
 		if (next != null) {
 			next.color = this.color;
 		}
+		playerData.setBuffs();
 		return next;
 	}
 	

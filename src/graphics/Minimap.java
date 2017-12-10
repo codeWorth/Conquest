@@ -48,7 +48,7 @@ public class Minimap implements Drawable {
 		for (int i = 0; i < World.board.tiles.length; i++) {
 			for (int j = 0; j < World.board.tiles[i].length; j++) {
 				BoardTile tile = World.board.tiles[i][j];
-				Color color = tile.resident.minimapColor();
+				Color color = tile.resident().minimapColor();
 				ctx.setColor(color);
 				Rectangle rect = new Rectangle(x + i * tileSize, y + j * tileSize, tileSize, tileSize);
 				ctx.fill(rect);

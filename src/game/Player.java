@@ -3,33 +3,42 @@ package game;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import game.residents.Archer;
-import game.residents.Armory;
-import game.residents.Base;
-import game.residents.Cavalry;
-import game.residents.Farm;
-import game.residents.Footman;
-import game.residents.Spearman;
 import game.residents.TileResident;
-import game.residents.Tower;
+import game.residents.buildings.Academy;
+import game.residents.buildings.AlchemyLab;
+import game.residents.buildings.Armory;
+import game.residents.buildings.Base;
+import game.residents.buildings.Farm;
+import game.residents.buildings.Hospice;
+import game.residents.buildings.Mine;
+import game.residents.buildings.Tower;
+import game.residents.units.Alchemist;
+import game.residents.units.Archer;
+import game.residents.units.Cavalry;
+import game.residents.units.Cleric;
+import game.residents.units.Fire_Mage;
+import game.residents.units.Footman;
+import game.residents.units.Ice_Mage;
+import game.residents.units.Medic;
+import game.residents.units.Spearman;
+import game.residents.units.Warlock;
+import game.residents.units.Wizard;
 import main.World;
 
 public class Player {
 	
 	public static Player player;
 
-	public int lightHealthIncrease;
-	public int heavyHealthIncrease;
-	public int lightDamageIncrease;
-	public int heavyDamageIncrease;
-	
 	public String name = "Andrew";
 	public boolean needPlaceBase = true;
+	public int baseLevel = 0;
 	public int money = 14;
+	public int ownedMines = 0;
 	private ArrayList<TileResident> limitedSupply = new ArrayList<>();
 	private ArrayList<TileResident> canMake = new ArrayList<>();
 	
-	public Player(Color color) {
+	public Player(Color color, String name) {
+		this.name = name;
 		PlayerData.me = new PlayerData(this.name, color);
 		
 		this.addLimited(new Base(PlayerData.me));
@@ -55,8 +64,8 @@ public class Player {
 		for (int i = 0; i < World.board.tiles.length; i++) {
 			for (int j = 0; j < World.board.tiles[i].length; j++) {
 				BoardTile currentTile = World.board.tiles[i][j];
-				if (currentTile.resident.playerData() == PlayerData.me) {
-					currentTile.resident.startOfTurnEffect();
+				if (currentTile.resident().playerData() == PlayerData.me) {
+					currentTile.resident().startOfTurnEffect();
 				}
 			}
 		}
@@ -66,6 +75,8 @@ public class Player {
 		if (this.needPlaceBase) {
 			return canMake.toArray(new TileResident[1]);
 		}
+		
+		this.ownedMines();
 		
 		int size = canMake.size();
 		for (int i = size - 1; i >= 0; i--) { //remove any remaining non limited options
@@ -85,9 +96,35 @@ public class Player {
 			canMake.add(new Spearman(PlayerData.me));
 			canMake.add(new Cavalry(PlayerData.me));
 			canMake.add(new Archer(PlayerData.me));
+			canMake.add(new Alchemist(PlayerData.me));
+			canMake.add(new Cleric(PlayerData.me));
+			canMake.add(new Fire_Mage(PlayerData.me));
+			canMake.add(new Ice_Mage(PlayerData.me));
+			canMake.add(new Medic(PlayerData.me));
+			canMake.add(new Warlock(PlayerData.me));
+			canMake.add(new Wizard(PlayerData.me));
+		}
+		
+		if (this.baseLevel > 0) {
+			canMake.add(new Academy(PlayerData.me));
+			canMake.add(new AlchemyLab(PlayerData.me));
+			canMake.add(new Hospice(PlayerData.me));
 		}
 		
 		return canMake.toArray(new TileResident[canMake.size()]);
+	}
+	
+	public void ownedMines() {
+		ownedMines = 0;
+		
+		for (int i = 0; i < World.board.tiles.length; i++) {
+			for (int j = 0; j < World.board.tiles[i].length; j++) {
+				BoardTile currentTile = World.board.tiles[i][j];
+				if (currentTile.resident().playerData() == PlayerData.me && currentTile.resident() instanceof Mine) {
+					ownedMines++;
+				}
+			}
+		}		
 	}
 	
 	public int ownedUnits() {
@@ -96,7 +133,7 @@ public class Player {
 		for (int i = 0; i < World.board.tiles.length; i++) {
 			for (int j = 0; j < World.board.tiles[i].length; j++) {
 				BoardTile currentTile = World.board.tiles[i][j];
-				if (!currentTile.resident.canBuildOn() && currentTile.resident.playerData() == PlayerData.me) {
+				if (!currentTile.resident().canBuildOn() && currentTile.resident().playerData() == PlayerData.me) {
 					owned++;
 				}
 			}
@@ -111,35 +148,13 @@ public class Player {
 		for (int i = 0; i < World.board.tiles.length; i++) {
 			for (int j = 0; j < World.board.tiles[i].length; j++) {
 				BoardTile currentTile = World.board.tiles[i][j];
-				if (currentTile.resident.playerData() == PlayerData.me) {
-					max += currentTile.resident.maxUnitsBuff();
+				if (currentTile.resident().playerData() == PlayerData.me) {
+					max += currentTile.resident().maxUnitsBuff();
 				}
 			}
 		}
 		
 		return max;
-	}
-	
-	public void setBuffs() {
-		this.lightHealthIncrease = 0;
-		this.lightDamageIncrease = 0;
-		this.heavyHealthIncrease = 0;
-		this.heavyDamageIncrease = 0;
-		
-		for (int i = 0; i < World.board.tiles.length; i++) {
-			for (int j = 0; j < World.board.tiles[i].length; j++) {
-				BoardTile currentTile = World.board.tiles[i][j];
-				if (currentTile.resident.playerData() == PlayerData.me) {
-					if (currentTile.resident instanceof Armory) {
-						Armory armory = (Armory)currentTile.resident;
-						this.lightHealthIncrease += armory.lightHealthBuff;
-						this.lightDamageIncrease += armory.lightDamageBuff;
-						this.heavyHealthIncrease += armory.heavyHealthBuff;
-						this.heavyDamageIncrease += armory.lightHealthBuff;
-					}
-				}
-			}
-		}
 	}
 	
 	public ArrayList<String> ownedNames() {
@@ -148,9 +163,9 @@ public class Player {
 		for (int i = 0; i < World.board.tiles.length; i++) {
 			for (int j = 0; j < World.board.tiles[i].length; j++) {
 				BoardTile currentTile = World.board.tiles[i][j];
-				if (currentTile.resident.playerData() == PlayerData.me) {
-					if (!owned.contains(currentTile.resident.name())) {
-						owned.add(currentTile.resident.name());
+				if (currentTile.resident().playerData() == PlayerData.me) {
+					if (!owned.contains(currentTile.resident().name())) {
+						owned.add(currentTile.resident().name());
 					}
 				}
 			}

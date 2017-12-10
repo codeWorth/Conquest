@@ -29,13 +29,13 @@ public class Board implements Drawable {
 		
 	public BoardTile[][] tiles;
 	public void setResident(int x, int y, TileResident resident) {
-		tiles[x][y].resident = resident;
-		Player.player.setBuffs();
+		tiles[x][y].setResident(resident);
+		resident.playerData().setBuffs();
 		NetworkClient.sendChange(x, y);
 	}
 	public void setSelectedResident(TileResident resident) {
-		selectedTile.resident = resident;
-		Player.player.setBuffs();
+		selectedTile.setResident(resident);
+		resident.playerData().setBuffs();
 		NetworkClient.sendChange(selectedTile.x, selectedTile.y);
 	}
 	
@@ -88,15 +88,15 @@ public class Board implements Drawable {
 	}
 		
 	public void pressTile(double mouseX, double mouseY) {		
-		int x = (int)((InputBinds.selectedTile.mouseX + Camera.CAM_X) / Board.TOTAL_TILE_SIZE);
-		int y = (int)((InputBinds.selectedTile.mouseY + Camera.CAM_Y) / Board.TOTAL_TILE_SIZE);
+		int x = (int)((InputBinds.mouse.mouseX + Camera.CAM_X) / Board.TOTAL_TILE_SIZE);
+		int y = (int)((InputBinds.mouse.mouseY + Camera.CAM_Y) / Board.TOTAL_TILE_SIZE);
 		
 		if (!World.isMyTurn) {
 			BoardTile tile = tiles[x][y];
-			if (tile.resident.canSelect() && tile.resident.playerData() != PlayerData.noPlayer) {
+			if (tile.resident().canSelect() && tile.resident().playerData() != PlayerData.noPlayer) {
 				deselectTile();
 				Surface.instance.removeUI();
-				Sidebar.instance.addStats(tile.resident.statsPanel());
+				Sidebar.instance.addStats(tile.resident().statsPanel(false));
 			} else {
 				deselectTile();
 			}
@@ -105,13 +105,13 @@ public class Board implements Drawable {
 		}
 		
 		if (Player.player.needPlaceBase) {
-			if (tiles[x][y].resident.playerData() == PlayerData.noPlayer) {
+			if (tiles[x][y].resident().playerData() == PlayerData.noPlayer) {
 				resetTiles();
 				
 				selectedTile = tiles[x][y];
 				
-				Surface.instance.addUI(tiles[x][y].resident.userInterface());
-				Sidebar.instance.addStats(tiles[x][y].resident.statsPanel());
+				Surface.instance.addUI(tiles[x][y].resident().userInterface());
+				Sidebar.instance.addStats(tiles[x][y].resident().statsPanel());
 			} else {
 				deselectTile();
 			}
@@ -122,22 +122,14 @@ public class Board implements Drawable {
 		switch (selectMode) {
 		case ATTACK:
 			if (canShootHere[x][y]) {
-				selectedTile.resident.attack(tiles[x][y].resident);
-				NetworkClient.sendAttack(selectedTile.x, selectedTile.y, x, y);
-				selectedTile.resident.reduceActionsLeft(1);
-				
-				if (selectedTile.resident.health() <= 0) {
-					setSelectedResident(new EmptyResident());
-				}
-				if (tiles[x][y].resident.health() <= 0) {
-					setResident(x, y, new EmptyResident());
-				}	
+				selectedTile.resident().attack(tiles[x][y].resident());
+				selectedTile.resident().reduceActionsLeft(1);
 			}
 			
 			deselectTile();
 			break;
 		case MOVE:
-			if (selectedTile != null && actionsForPos(x, y, selectedTile.resident.actionsLeft()) <= selectedTile.resident.actionsLeft() && moveStepsLeft[x][y] != -1) {
+			if (selectedTile != null && actionsForPos(x, y, selectedTile.resident().actionsLeft()) <= selectedTile.resident().actionsLeft() && moveStepsLeft[x][y] != -1) {
 				moveResident(x, y);
 				deselectTile();
 			} else {
@@ -146,35 +138,35 @@ public class Board implements Drawable {
 			
 			break;
 		case NONE:
-			if (tiles[x][y].resident.playerData() == PlayerData.noPlayer) {
+			if (tiles[x][y].resident().playerData() == PlayerData.noPlayer) {
 				if (hasFriendlyBordering(x, y)) {
 					resetTiles();
 					selectedTile = tiles[x][y];					
-					Surface.instance.addUI(tiles[x][y].resident.userInterface());
-					Sidebar.instance.addStats(tiles[x][y].resident.statsPanel());
+					Surface.instance.addUI(tiles[x][y].resident().userInterface());
+					Sidebar.instance.addStats(tiles[x][y].resident().statsPanel());
 				} else {
 					deselectTile();
 				}
-			} else if (tiles[x][y].resident.playerData() != PlayerData.me) {
+			} else if (tiles[x][y].resident().playerData() != PlayerData.me) {
 				deselectTile();
 
-				if (tiles[x][y].resident.playerData() != PlayerData.noPlayer) {
+				if (tiles[x][y].resident().playerData() != PlayerData.noPlayer) {
 					Surface.instance.removeUI();
-					Sidebar.instance.addStats(tiles[x][y].resident.statsPanel());
+					Sidebar.instance.addStats(tiles[x][y].resident().statsPanel());
 				}
 			} else {
 				selectedTile = tiles[x][y];
 				
-				if (selectedTile.resident.canSelect()) {
+				if (selectedTile.resident().canSelect()) {
 					resetTiles();
 
-					if (selectedTile.resident.actionsLeft() > 0) {
-						Surface.instance.addUI(tiles[x][y].resident.userInterface());
+					if (selectedTile.resident().actionsLeft() > 0) {
+						Surface.instance.addUI(tiles[x][y].resident().userInterface());
 					} else {
 						Surface.instance.removeUI();
 					}
 					
-					Sidebar.instance.addStats(selectedTile.resident.statsPanel());
+					Sidebar.instance.addStats(selectedTile.resident().statsPanel());
 				} else {
 					deselectTile();
 				}
@@ -185,16 +177,16 @@ public class Board implements Drawable {
 	}
 	
 	private boolean hasFriendlyBordering(int x, int y) {
-		if (x > 0 && tiles[x-1][y].resident.canBuildOn() && tiles[x-1][y].resident.playerData() == PlayerData.me) {
+		if (x > 0 && tiles[x-1][y].resident().canBuildOn() && tiles[x-1][y].resident().playerData() == PlayerData.me) {
 			return true;
 		}
-		if (x < tiles.length - 1 && tiles[x+1][y].resident.canBuildOn() && tiles[x+1][y].resident.playerData() == PlayerData.me) {
+		if (x < tiles.length - 1 && tiles[x+1][y].resident().canBuildOn() && tiles[x+1][y].resident().playerData() == PlayerData.me) {
 			return true;
 		}
-		if (y > 0 && tiles[x][y-1].resident.canBuildOn() && tiles[x][y-1].resident.playerData() == PlayerData.me) {
+		if (y > 0 && tiles[x][y-1].resident().canBuildOn() && tiles[x][y-1].resident().playerData() == PlayerData.me) {
 			return true;
 		}
-		if (y < tiles[0].length - 1 && tiles[x][y+1].resident.canBuildOn() && tiles[x][y+1].resident.playerData() == PlayerData.me) {
+		if (y < tiles[0].length - 1 && tiles[x][y+1].resident().canBuildOn() && tiles[x][y+1].resident().playerData() == PlayerData.me) {
 			return true;
 		}
 		
@@ -205,7 +197,7 @@ public class Board implements Drawable {
 		resetTiles();
 		selectMode = SelectMode.MOVE;
 		
-		int stepsLeft = selectedTile.resident.actionsLeft();
+		int stepsLeft = selectedTile.resident().actionsLeft();
 		int x = selectedTile.x;
 		int y = selectedTile.y;
 		
@@ -227,7 +219,7 @@ public class Board implements Drawable {
 					
 					if (a >= 0 && a < tiles.length && b >= 0 && b < tiles[0].length) {
 						int newSteps = stepsLeft - Math.abs(i) - Math.abs(j);
-						if (newSteps > originalSteps && tiles[a][b].resident.canMoveThrough()) {
+						if (newSteps > originalSteps && tiles[a][b].resident().canMoveThrough()) {
 							floodFillMovement(a, b, newSteps);
 						}
 					}
@@ -252,7 +244,7 @@ public class Board implements Drawable {
 		resetTiles();
 		selectMode = SelectMode.ATTACK;
 		
-		int range = selectedTile.resident.shootRange();
+		int range = selectedTile.resident().shootRange();
 		int x = selectedTile.x;
 		int y = selectedTile.y;
 		
@@ -263,7 +255,7 @@ public class Board implements Drawable {
 				int newY = y + j;
 				
 				BoardTile tile = tiles[newX][newY];
-				if (tile.resident.health() > 0 && tile.resident.playerData() != PlayerData.me) {
+				if (selectedTile.resident().canTarget(tile.resident())) {
 					tileTints[newX][newY] = TileTint.RED;
 					canShootHere[newX][newY] = true;
 				} else {
@@ -283,8 +275,8 @@ public class Board implements Drawable {
 	}
 	
 	private void moveResident(int newX, int newY) {
-		selectedTile.resident.reduceActionsLeft(actionsForPos(newX, newY, selectedTile.resident.actionsLeft()));
-		setResident(newX, newY, selectedTile.resident);
+		selectedTile.resident().reduceActionsLeft(actionsForPos(newX, newY, selectedTile.resident().actionsLeft()));
+		setResident(newX, newY, selectedTile.resident());
 		setSelectedResident(new EmptyResident());
 	}
 	
@@ -293,15 +285,15 @@ public class Board implements Drawable {
 		
 		for (int i = 0; i < tiles.length; i++) {
 			for (int j = 0; j < tiles[i].length; j++) {
-				tiles[i][j].resident.setActionsLeft(0);
+				tiles[i][j].resident().setActionsLeft(0);
 			}
 		}
 		
 		for (int i = 0; i < tiles.length; i++) {
 			for (int j = 0; j < tiles[i].length; j++) {
 				BoardTile tile = tiles[i][j];
-				if (tile.resident.playerData() == PlayerData.me) {
-					tiles[i][j].resident.setActionsLeft(tile.resident.moveRange());
+				if (tile.resident().playerData() == PlayerData.me) {
+					tiles[i][j].resident().setActionsLeft(tile.resident().moveRange());
 				}
 			}
 		}

@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import game.network.LaunchScreen;
+import main.Main;
 import main.World;
 import util.input.InputBinds;
 
@@ -18,6 +20,7 @@ public class Surface extends JPanel implements Runnable {
 	public static Surface instance = null;
 	
 	private Thread t;
+	private boolean shouldGo = true;
 	private final int DELAY = 25;
 	private JPanel ui = null;
 		
@@ -35,9 +38,8 @@ public class Surface extends JPanel implements Runnable {
 		Set<KeyStroke> empty = Collections.emptySet();
 	    setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, empty);
 	    setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, empty);
-		
+				
 		World.initialize();
-		
 		setBackground(Color.black);
 	}
 	
@@ -48,12 +50,13 @@ public class Surface extends JPanel implements Runnable {
 	    World.graphicsUpdate();
 	}
 	
-	@Override
-    public void addNotify() {
+    public void start() {
         super.addNotify();
+        this.shouldGo = true;
 
         this.t = new Thread(this);
         this.t.start();        
+		this.requestFocusInWindow();
     }
 	
 	@Override
@@ -63,7 +66,7 @@ public class Surface extends JPanel implements Runnable {
 
         beforeTime = System.currentTimeMillis();
 
-        while (true) {
+        while (shouldGo) {
             repaint();
 
             timeDiff = System.currentTimeMillis() - beforeTime;
@@ -102,6 +105,12 @@ public class Surface extends JPanel implements Runnable {
 		}
 		
 		ui = null;
+	}
+	
+	public void homeScreen() {
+		shouldGo = false;
+		Main.instance.removeAll();
+		Main.instance.add(new LaunchScreen(Main.instance));
 	}
 	
 }

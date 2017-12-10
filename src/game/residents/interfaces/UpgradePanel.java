@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import game.Player;
+import game.PlayerData;
 import game.network.NetworkClient;
 import game.residents.Upgrade;
 import graphics.Sidebar;
@@ -88,10 +89,13 @@ public class UpgradePanel extends JPanel implements Clickable {
 			return;
 		}
 		
+		if (slot >= upgrades.length || slot < 0) {
+			return;
+		}
 		Upgrade clicked = upgrades[slot];
 		
 		if (Player.player.money >= clicked.cost) {
-			upgrades[slot] = clicked.run();
+			upgrades[slot] = clicked.run(PlayerData.me);
 			NetworkClient.sendUpgrade(World.board.selectedTile.x, World.board.selectedTile.y, slot);
 			if (upgrades[slot] == null) {
 				names[slot].setVisible(false);

@@ -7,20 +7,24 @@ import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
+import game.network.LaunchScreen;
 import graphics.Camera;
 import graphics.Sidebar;
-import graphics.Surface;
 
 public class Main extends JFrame {
 		
+	public static Main instance;
+	
 	public Main() {
 		initUI();		
 	}
 
 	private void initUI() {
+		
+		instance = this;
 				
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		Camera.CAM_WIDTH = size.width - Sidebar.width;
+		Camera.CAM_WIDTH = size.width - Sidebar.width - 25;
 		Camera.CAM_HEIGHT = size.height - 25;
 		
 		setTitle("Conquest");
@@ -30,7 +34,7 @@ public class Main extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocation(0, 0);
 
-		add(new Surface());
+		add(new LaunchScreen(this));
 		
 	}
 

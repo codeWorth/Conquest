@@ -9,61 +9,64 @@ import javax.swing.Timer;
 import game.Board;
 import game.Player;
 import game.network.NetworkClient;
-import game.residents.GoldResource;
 import graphics.Camera;
 import graphics.Minimap;
 import graphics.Sidebar;
+import graphics.Surface;
 import util.actions.Action;
 import util.input.InputBinds;
-import util.math.TerrainGenerator;
 
 public class World {
 
 	public static Graphics2D ctx;
 	
-	public static boolean isMyTurn = false;
+	public static boolean isMyTurn;
+	public static boolean isInfo;
 	public static Board board;
 	public static Minimap minimap;
 	private static final Color defaultMouseColor = new Color(0, 0, 0, 60);
 	public static Color mouseColor = defaultMouseColor;
-	private static Thread networkThread;
+	public static Thread networkThread;
 		
 	public static Timer timer;
 	public static int timerDelay = 100;
 		
-	public static void initialize() {		
+	public static void initialize() {	
+		isInfo = false;
+		isMyTurn = false;
 		board = new Board(25, 25);
 		minimap = new Minimap(50, 50, 4);
-		boolean[][] golds = TerrainGenerator.generateTerrain(25, 25, 4, 0.15, 0.5);
 		
-		for (int i = 0; i < 25; i++) {
-			for (int j = 0; j < 25; j++) {
-				if (golds[i][j]) {
-					board.tiles[i][j].resident = new GoldResource();
-				}
-			}
-		}
-		
-		InputBinds.selectedTile.addClickAction(new Action(null) {
+		InputBinds.mouse.addClickAction(new Action(null) {
 			@Override
 			public void execute() {
-				if (InputBinds.selectedTile.mouseX < Camera.CAM_WIDTH) {
-					board.pressTile(InputBinds.selectedTile.mouseX, InputBinds.selectedTile.mouseY);
+				if (isInfo) {
+					isInfo = false;
+					Sidebar.instance.removeStats();
+					if (board.selectedTile != null) {
+						Sidebar.instance.addStats(board.selectedTile.resident().statsPanel());
+					}
+					return;
+				}
+				
+				if (InputBinds.mouse.mouseX < Camera.CAM_WIDTH) {
+					board.pressTile(InputBinds.mouse.mouseX, InputBinds.mouse.mouseY);
 					mouseColor = defaultMouseColor;
 				} else {
-					Sidebar.instance.press(InputBinds.selectedTile.mouseX - Camera.CAM_WIDTH, InputBinds.selectedTile.mouseY);
+					Sidebar.instance.press(InputBinds.mouse.mouseX - Camera.CAM_WIDTH, InputBinds.mouse.mouseY);
 				}
 			}
 		});
 		
-		Player.player = new Player(new Color(114, 181, 204));
-		networkThread = new Thread(new Runnable() {
+		InputBinds.mouse.addRightClickAction(new Action(null) {
 			@Override
-			public void run() {
-				NetworkClient.start();
+			public void execute() {
+				if (InputBinds.mouse.mouseX >= Camera.CAM_WIDTH) {
+					Sidebar.instance.rightPress(InputBinds.mouse.mouseX - Camera.CAM_WIDTH, InputBinds.mouse.mouseY);
+				}
 			}
 		});
-		networkThread.start();
+		
 		Sidebar.detailsStart = 20;
 		Sidebar.instance.redrawUI();
 	}
@@ -72,13 +75,15 @@ public class World {
 		if (!myTurn) {
 			NetworkClient.sendEndTurn();
 			isMyTurn = false;
-			Sidebar.detailsStart = 20;
+			Sidebar.instance.removeStats();
+			Surface.instance.removeUI();
+			Sidebar.detailsStart = 100;
 		} else {
 			isMyTurn = true;
-			Sidebar.detailsStart = 210;
+			Sidebar.detailsStart = 255;
 			
-			Player.player.turnStart();
 			board.newTurn();
+			Player.player.turnStart();
 		}
 		
 		Sidebar.instance.redrawUI();
@@ -98,9 +103,9 @@ public class World {
 		
 		board.draw(ctx);
 		
-		int x = (int)((InputBinds.selectedTile.mouseX + Camera.CAM_X) / Board.TOTAL_TILE_SIZE);
+		int x = (int)((InputBinds.mouse.mouseX + Camera.CAM_X) / Board.TOTAL_TILE_SIZE);
 		int screenX = x * Board.TOTAL_TILE_SIZE - Camera.CAM_X;
-		int y = (int)((InputBinds.selectedTile.mouseY + Camera.CAM_Y) / Board.TOTAL_TILE_SIZE);
+		int y = (int)((InputBinds.mouse.mouseY + Camera.CAM_Y) / Board.TOTAL_TILE_SIZE);
 		int screenY = y * Board.TOTAL_TILE_SIZE - Camera.CAM_Y;
 		
 		ctx.setPaint(mouseColor);
